@@ -22,40 +22,110 @@ warnings.filterwarnings('ignore')
 
 # %matplotlib inline
 
-def getCPUorGPUorTPUStrategy():
-    """Check if have TPU or GPU or just CPU
-    Returns
-    -------
-    A tf.distribute.get_strategy() for implementing data parallelism.
-      strategy is used for distributing jobs
-    """
-    try:
-        tpu = tf.distribute.cluster_resolver.TPUClusterResolver()
-        tf.config.experimental_connect_to_cluster(tpu)
-        tf.tpu.experimental.initialize_tpu_system(tpu)
-        print('Running on TPU')
-        return tf.distribute.TPUStrategy(tpu)
-    except ValueError:  # if TPU not found
-        tpu = None
-        # print('No TPU found!')
-        if tpu is None:
-            # Detect GPU hardware
-            gpu = tf.test.gpu_device_name()  # check oif you have a GPU
-            if gpu == '/device:GPU:0':
-                print('Running on GPU')
-                # !/opt/bin/nvidia-smi
-                return tf.distribute.get_strategy()
-            else:
-                print('Running on CPU')
-                return tf.distribute.get_strategy()
+
+class BTCHelper():
+
+    def __init__(self, srcPath, trainDir, testDir):
+        self.srcPath = srcPath
+        self.trainDir = trainDir
+        self.testDir = testDir
+        self.__trainArr = []
+        self.__trainDf = []
+        self.__testArr = []
+        self.__testDf = []
+        self.__mergeAndSplit = 'Original'
+        self.__cached = False
+        self.__cachedSize = 0
+
+    def getDataSet(self, resize, mergeSplit=None, forceReread=False):
+        """Get train and test datasets
+        Parameters
+        ----------
+        resize : An integer corresponding to resize ex. 256
+        mergeSplit : a str value ['None','all']. If 'all' then concatenate
+                     train and test image arrays as well as labels and do a
+                     80:20 to return train and test datasets.
+                     defaults to 'None'
+        forceReread : force re-caching the dataset, if method is called with
+                      resize parameter different from first call, trigger forceReread
+
+        Returns
+        -------
+        trainImgArr: numpy.ndarray of training images of shape(nImages,resize,resize)
+        testImgArr: numpy.ndarray of testing images of shape(nImages,resize,resize)
+        trainDf: A pandas.DataFrame of original and cropped image information for training dataset
+        testDf: A pandas.DataFrame of original and cropped image information for testing dataset
+        """
+        if not self.__cached or forceReread or self.__cachedSize != resize:
+            print('Updating cache with training and testing datasets')
+            self.__updateCache(resize)
+
+        if mergeSplit == 'all':
+            print('merging cached training and testing datasets')
+            mergeArr = np.concatenate((self.__trainArr, self.__testArr), axis=0)
+            mergeDf = self.__trainDf.append(self.__testDf, ignore_index=True)
+            # split into train and test sets and update
+            mergeSplitRatio = 0.2
+            print(f'\nSplitting ratio for merged dataset is set to {mergeSplitRatio:.2f}')
+            self.__trainArr, self.__testArr, self.__trainDf, self.__testDf = \
+                train_test_split(mergeArr, mergeDf, test_size=mergeSplitRatio, shuffle=True)  # auto-stratify
+            self.__trainDf.reset_index(inplace=True)
+            self.__testDf.reset_index(inplace=True)
+            self.__mergeAndSplit = 'Merged&Split'
+        # return the cached dataset
+        print(f'Returning cached [{self.__mergeAndSplit}] training and testing datasets')
+        return self.__trainArr, self.__testArr, self.__trainDf, self.__testDf
+
+    def __updateCache(self, resize):
+        """Update train and test datasets
+        Parameters
+        ----------
+        resize : An integer corresponding to resize ex. 256
+
+        Returns
+        -------
+        """
+        trainFile = self.trainDir + '_' + str(resize) + '.h5'
+        testFile = self.testDir + '_' + str(resize) + '.h5'
+        trainHdf5File = os.path.join(self.srcPath, trainFile)
+        testHdf5File = os.path.join(self.srcPath, testFile)
+        # assert files exist
+        # assert os.path.exists(trainHdf5File), os.path.abspath(trainHdf5File)
+        # assert os.path.exists(testHdf5File), os.path.abspath(testHdf5File)
+        if not os.path.exists(trainHdf5File) or not os.path.exists(testHdf5File):
+            print('Converting dataset to HDF5 files')
+            DataUtils.convertToHdf5(self.srcPath, self.trainDir, resize)
+            DataUtils.convertToHdf5(self.srcPath, self.testDir, resize)
+
+        # Read train and test HDF5 files
+        print('Caching train and test datasets')
+        self.__trainArr, _, self.__trainDf = DataUtils.readHdf5File(trainHdf5File)
+        self.__trainDf['setName'] = 'Training'
+        self.__trainDf['imageUID'] = self.__trainDf['setName'] \
+                                     + '_' + self.__trainDf['tumorCategory'] \
+                                     + '_' + self.__trainDf['fileId']
+        self.__testArr, _, self.__testDf = DataUtils.readHdf5File(testHdf5File)
+        self.__testDf['setName'] = 'Testing'
+        self.__testDf['imageUID'] = self.__testDf['setName'] \
+                                    + '_' + self.__testDf['tumorCategory'] \
+                                    + '_' + self.__testDf['fileId']
+        # set cached flag
+        self.__cached = True
+        self.__cachedSize = resize
+        # return nothing
 
 
-# Utilities for reading and writing datafiles
 class DataUtils:
-    # all methods are static so no constructor needed
-    # def __init__(self):
-    #     # just a ctor
-    #     pass
+
+    @staticmethod
+    def convertToHdf5(srcDataPath, dirName, resize):
+        dirPath = os.path.join(srcDataPath, dirName)
+        hdfFile = os.path.join(srcDataPath, (dirName + '_' + str(resize) + '.h5'))
+        if not os.path.exists(hdfFile):
+            imgArr, imgInfoDf = DataUtils.getImageDataset(dirPath, resize)
+            DataUtils.writeHdf5File(hdfFile, imgArr, imgInfoDf)
+        imgArr, labels, infoDf = DataUtils.readHdf5File(hdfFile)
+        return imgArr, infoDf
 
     @staticmethod
     def cropImg(img, thresh=25):
@@ -123,6 +193,35 @@ class DataUtils:
                                     'cropHeight': _cropHeight})
         return images, imageInfoDf
 
+    # Utilities for reading and writing datafiles
+    @staticmethod
+    def readHdf5Var(hdfFile, varName):
+        """Read specific variable from previously HDF5 format datafile
+
+        Parameters
+        ----------
+        hdfFile : Name of HDF5 file containing data with full path
+        varName : Name of the variable saved to the file. Valid names are
+                  ['tumorCategory','origWidth','origHeight',
+                   'cropWidth','cropHeight','images']
+
+        Returns
+        -------
+        An named array stored in the file
+        """
+        assert varName in ['tumorCategory', 'origWidth', 'origHeight',
+                           'cropWidth', 'cropHeight', 'images']
+        h5f = h5py.File(hdfFile, 'r')
+        if varName in ['tumorCategory', 'fileId']:
+            return getShortLabels(np.array(h5f['/' + varName]).astype("str"))
+        elif varName in ['origWidth', 'origHeight', 'cropWidth', 'cropHeight']:
+            return np.array(h5f['/' + varName]).astype("uint16")
+        elif varName == 'images':
+            return np.array(h5f["/images"]).astype("uint8")
+        else:
+            print(f'****Var name {varName} not found in file {hdfFile}****')
+            return None
+
     # see: https://realpython.com/storing-images-in-python/
     # we will store all the images into an HDF5 dataset for faster image loading
     # quote: "HDF has its origins in the National Center for Supercomputing Applications,
@@ -149,10 +248,10 @@ class DataUtils:
         h5f = h5py.File(hdfFile, 'w')
         h5f.create_dataset('images', np.shape(imgArr), _ui8, data=imgArr,
                            compression='gzip', compression_opts=9)
-        # colum 0
+        # column 0
         h5f.create_dataset('tumorCategory', np.shape(tCat), _str, data=tCat,
                            compression="gzip", compression_opts=9)
-        # colum 1
+        # column 1
         h5f.create_dataset('fileId', np.shape(fileId), _str, data=fileId,
                            compression="gzip", compression_opts=9)
 
@@ -163,10 +262,7 @@ class DataUtils:
                                compression="gzip", compression_opts=9)
         h5f.close()
         print(f'wrote file {os.path.abspath(hdfFile)}')
-        # No return
 
-    # read datafile writen by writeHdf5File
-    @staticmethod
     def readHdf5File(hdfFile):
         """Read a previously written Training or Testing HDF5 format datafile
 
@@ -197,46 +293,34 @@ class DataUtils:
         labels = infoDf['tumorCategory']
         return imgArr, labels, infoDf
 
-    @staticmethod
-    def readHdf5Var(hdfFile, varName):
-        """Read specific variable from previously HDF5 format datafile
 
-        Parameters
-        ----------
-        hdfFile : Name of HDF5 file containing data with full path
-        varName : Name of the variable saved to the file. Valid names are
-                  ['tumorCategory','origWidth','origHeight',
-                   'cropWidth','cropHeight','images']
+def getCPUorGPUorTPUStrategy():
+    """Check if have TPU or GPU or just CPU
+    Returns
+    -------
+    A tf.distribute.get_strategy() for implementing data parallelism.
+      strategy is used for distributing jobs
+    """
+    try:
+        tpu = tf.distribute.cluster_resolver.TPUClusterResolver()
+        tf.config.experimental_connect_to_cluster(tpu)
+        tf.tpu.experimental.initialize_tpu_system(tpu)
+        print('Running on TPU')
+        return tf.distribute.TPUStrategy(tpu)
+    except ValueError:  # if TPU not found
+        tpu = None
+        # print('No TPU found!')
+        if tpu is None:
+            # Detect GPU hardware
+            gpu = tf.test.gpu_device_name()  # check oif you have a GPU
+            if gpu == '/device:GPU:0':
+                print('Running on GPU')
+                # !/opt/bin/nvidia-smi
+                return tf.distribute.get_strategy()
+            else:
+                print('Running on CPU')
+                return tf.distribute.get_strategy()
 
-        Returns
-        -------
-        An named array stored in the file
-        """
-        assert varName in ['tumorCategory', 'origWidth', 'origHeight',
-                           'cropWidth', 'cropHeight', 'images']
-        h5f = h5py.File(hdfFile, 'r')
-        if varName in ['tumorCategory', 'fileId']:
-            return getShortLabels(np.array(h5f['/' + varName]).astype("str"))
-        elif varName in ['origWidth', 'origHeight', 'cropWidth', 'cropHeight']:
-            return np.array(h5f['/' + varName]).astype("uint16")
-        elif varName == 'images':
-            return np.array(h5f["/images"]).astype("uint8")
-        else:
-            print(f'****Var name {varName} not found in file {hdfFile}****')
-            return None
-
-    @staticmethod
-    def convertToHdf5(srcDataPath, dirName, resize):
-        dirPath = os.path.join(srcDataPath, dirName)
-        hdfFile = os.path.join(srcDataPath, (dirName + '_' + str(resize) + '.h5'))
-        if not os.path.exists(hdfFile):
-            imgArr, imgInfoDf = DataUtils.getImageDataset(dirPath, resize)
-            DataUtils.writeHdf5File(hdfFile, imgArr, imgInfoDf)
-        imgArr, labels, infoDf = DataUtils.readHdf5File(hdfFile)
-        return imgArr, labels, infoDf
-
-
-# end class DataUtils
 
 # Get distribution of labels
 def getLabelDistributionDf(labelsDict):
@@ -789,34 +873,46 @@ def getClassificationReport(model, testData, testCats, targetNames, asDataframe=
                                      target_names=targetNames)
 
 
-def getMergedDataSet(srcDataPath, trainFile, testFile):
-    # Merge datasets into a single dataset
-    trainHdf5File = os.path.join(srcDataPath, trainFile)
-    testHdf5File = os.path.join(srcDataPath, testFile)
-    # merge datasets
-    imgs, labels, summDf = DataUtils.readHdf5File(trainHdf5File)
-    summDf['setName'] = 'Training'
-    t, l, df = DataUtils.readHdf5File(testHdf5File)
-    df['setName'] = 'Testing'
-    imgs = np.concatenate((imgs, t), axis=0)
-    summDf = summDf.append(df, ignore_index=True)
-    labels = summDf['tumorCategory']
-    return imgs, labels, summDf
-
-
 if __name__ == '__main__':
     print('in Main')
-    dataPath = '../DataSetBrainTumor'  # dir or link to dir for running local
+    dataPath = '../../DataSetBrainTumor'  # dir or link to dir for running local
     outputPath = 'outputMergedData'  # dir or link to dir (where the source file is)
     # Output path for figures, models, and model-tuning
     modelPath = os.path.join(outputPath, 'models')
     figurePath = os.path.join(outputPath, 'figures')
     modelTunerPath = os.path.join(outputPath, 'model-tuner')
-    # test merged dataset
-    allImgs, allLabels, allImgSummDf = getMergedDataSet(dataPath, 'Training_256.h5', 'Testing_256.h5')
-    print(allImgs.shape, allLabels.shape)
-    print(allImgSummDf)
-    # test wite reshaped...
+    # ######################################################
+    # btc = BTCHelper(dataPath,'Training','Testing')
+    # # test train and test datasets
+    # trainArr,testArr,trainDf,testDf = btc.getDataSet(256)
+    # print(trainArr.shape, testArr.shape)
+    # print(trainDf)
+    # print(testDf)
+    # # test train and test datasets for merge and split
+    # trainArr, testArr, trainDf, testDf = btc.getDataSet(256,mergeSplit='all')
+    # print(trainArr.shape, testArr.shape)
+    # print(trainDf)
+    # print(testDf)
+    # ######################################################
+    # #test train and test create hdf5 file if not exist
+    # first delete if exists:
+    btc = BTCHelper(dataPath, 'Training', 'Testing')
+    resize = 32  # so that it is fast
+    for prefix in ['Training', 'Testing']:
+        fil = os.path.join(dataPath, prefix + '_' + str(resize) + '.h5')
+        if os.path.exists(fil):
+            os.remove(fil)
+
+    trainArr, testArr, trainDf, testDf = btc.getDataSet(resize)
+    print(trainArr.shape, testArr.shape)
+    print(trainDf)
+    print(testDf)
+    # check reading from cache
+    trainArr1, testArr1, trainDf1, testDf1 = btc.getDataSet(resize)
+    print(trainArr1.shape, testArr1.shape)
+    print(trainDf1)
+    print(testDf1)
+    # test write reshaped...
     # imgReshape = 150
     # trainImgs, trainLabels, trainDf = DataUtils.convertToHdf5(dataPath, 'Training',imgReshape)
     # testImgs, testLabels, testDf = DataUtils.convertToHdf5(dataPath, 'Testing',imgReshape)
