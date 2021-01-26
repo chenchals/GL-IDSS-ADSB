@@ -37,11 +37,11 @@ class BTCHelper():
         self.__cached = False
         self.__cachedSize = 0
 
-    def getDataSet(self, resize, mergeSplit=None, forceReread=False):
+    def getDataSet(self, imgResize, mergeSplit=None, forceReread=False):
         """Get train and test datasets
         Parameters
         ----------
-        resize : An integer corresponding to resize ex. 256
+        imgResize : An integer corresponding to resize ex. 256
         mergeSplit : a str value ['None','all']. If 'all' then concatenate
                      train and test image arrays as well as labels and do a
                      80:20 to return train and test datasets.
@@ -56,9 +56,9 @@ class BTCHelper():
         trainDf: A pandas.DataFrame of original and cropped image information for training dataset
         testDf: A pandas.DataFrame of original and cropped image information for testing dataset
         """
-        if not self.__cached or forceReread or self.__cachedSize != resize:
+        if not self.__cached or forceReread or self.__cachedSize != imgResize:
             print('Updating cache with training and testing datasets')
-            self.__updateCache(resize)
+            self.__updateCache(imgResize)
 
         if mergeSplit == 'all':
             print('merging cached training and testing datasets')
