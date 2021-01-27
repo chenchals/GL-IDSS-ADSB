@@ -1,28 +1,26 @@
 # GL-IDSS-ADSB
 Applied Data Science Bootcamp: MIT-IDSS from Great Learning October 2020-cohort
 
-# Brain Tumor Classification 
+# Dataset Folder
+1. This folder shall contain the the Training and Testing datasets as original folders or softlinks to these folders
+OR
+2. This folder shall contain the HDF5 files for Training_150.h5 / Testing _150.h5 files where 
+each file is a HDF5 file of training or testing images created by using 
+BTCHelper.DataUtils.convertToHdf5() function
 
-Build a CNN model for classifying MRI scans as belonging to one of the following classes - glioma_tumor, meningioma_tumor, pituitary_tumor or no_tumor.
+# create softlinks (mac/linux)
+In main project folder [GL-IDSS-ADSB]:
+[GL-IDSS-ADSB]$ mkdir DatasetBrainTumor
+[GL-IDSS-ADSB]$ cd DatasetBrainTumor
+[DatasetBrainTumor]$
 
-To run the notebook:
-1. Ensure you have created proper data directory locations in the notebook
-2. Ensure you have created HDF5 files for Trainign and Testing data (See BTCHelper.DataUtils)
-3. Create output directories output/figures, output/models and point variables to correct locations
-4. Running on Google colab with TPU is much faster than on GPUs
+#1 for training and testing directories
+DatasetBrainTumor$ ln -s [location-of-DataSetBrainTumor/Training] Training
+DatasetBrainTumor$ ln -s [location-of-DataSetBrainTumor/Testing] Testing
 
+#2 for HDF5 files
+[DatasetBrainTumor]$ ln -s [location-of-DataSetBrainTumor/Training_256.h5] Training_256.h5
+[DatasetBrainTumor]$ ln -s [location-of-DataSetBrainTumor/Testing_256.h5] Testing_256.h5
 
-# Other comments and discussion form Kaggle:
-This dataset may be similar to the one on Kaggle:
-https://www.kaggle.com/sartajbhuvaji/brain-tumor-classification-mri
-
-This discussion link talks about source of the dataset:
-https://www.kaggle.com/sartajbhuvaji/brain-tumor-classification-mri/discussion/154260
-
-Comments on notebooks:
-
-1. https://www.kaggle.com/taha07/brain-tumor-classification-97-5
-This notebook claims a 97.5%, upon closely following the data, you can see that
-the x_test, y_test is used as validation data for training as well. 
-Hence, the final results are test data appears as  07.5%, which imho is incorrect.
-
+# Output directory:
+is automatically created in the notebook location by code

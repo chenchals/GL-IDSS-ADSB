@@ -6,10 +6,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d5d6add-464c-464e-b8ac-335c1952101a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/07-Capstone/btc/test_btchelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/07-Capstone/BTC/BTC_Helpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/07-Capstone/btc/btc_helpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/07-Capstone/BTC/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/07-Capstone/btc/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/07-Capstone/Readme.txt" beforeDir="false" afterPath="$PROJECT_DIR$/07-Capstone/Readme.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +34,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/07-Capstone/BTC" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
@@ -171,7 +169,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1611677445911</updated>
-      <workItem from="1611677446950" duration="19548000" />
+      <workItem from="1611677446950" duration="21582000" />
+      <workItem from="1611760872268" duration="676000" />
     </task>
     <servers />
   </component>
@@ -213,9 +212,7 @@
         <entry key="1" value="TOOL_WINDOW" />
       </map>
     </option>
-  </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="543" y="295" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1611680680692">
@@ -226,38 +223,38 @@
       <screen x="0" y="23" width="1680" height="988" />
     </state>
     <state x="554" y="361" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1680.988@0.23.1680.988" timestamp="1611678084659" />
-    <state width="1463" height="266" key="GridCell.Tab.0.bottom" timestamp="1611705739525">
+    <state width="1463" height="313" key="GridCell.Tab.0.bottom" timestamp="1611759929179">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="266" key="GridCell.Tab.0.bottom/0.23.1680.988@0.23.1680.988" timestamp="1611705739525" />
-    <state width="1463" height="266" key="GridCell.Tab.0.center" timestamp="1611705739524">
+    <state width="1463" height="313" key="GridCell.Tab.0.bottom/0.23.1680.988@0.23.1680.988" timestamp="1611759929179" />
+    <state width="1463" height="313" key="GridCell.Tab.0.center" timestamp="1611759929179">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="266" key="GridCell.Tab.0.center/0.23.1680.988@0.23.1680.988" timestamp="1611705739524" />
-    <state width="1463" height="266" key="GridCell.Tab.0.left" timestamp="1611705739523">
+    <state width="1463" height="313" key="GridCell.Tab.0.center/0.23.1680.988@0.23.1680.988" timestamp="1611759929179" />
+    <state width="1463" height="313" key="GridCell.Tab.0.left" timestamp="1611759929179">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="266" key="GridCell.Tab.0.left/0.23.1680.988@0.23.1680.988" timestamp="1611705739523" />
-    <state width="1463" height="266" key="GridCell.Tab.0.right" timestamp="1611705739524">
+    <state width="1463" height="313" key="GridCell.Tab.0.left/0.23.1680.988@0.23.1680.988" timestamp="1611759929179" />
+    <state width="1463" height="313" key="GridCell.Tab.0.right" timestamp="1611759929179">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="266" key="GridCell.Tab.0.right/0.23.1680.988@0.23.1680.988" timestamp="1611705739524" />
-    <state width="1463" height="313" key="GridCell.Tab.1.bottom" timestamp="1611702200034">
+    <state width="1463" height="313" key="GridCell.Tab.0.right/0.23.1680.988@0.23.1680.988" timestamp="1611759929179" />
+    <state width="1463" height="313" key="GridCell.Tab.1.bottom" timestamp="1611759929180">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="313" key="GridCell.Tab.1.bottom/0.23.1680.988@0.23.1680.988" timestamp="1611702200034" />
-    <state width="1463" height="313" key="GridCell.Tab.1.center" timestamp="1611702200033">
+    <state width="1463" height="313" key="GridCell.Tab.1.bottom/0.23.1680.988@0.23.1680.988" timestamp="1611759929180" />
+    <state width="1463" height="313" key="GridCell.Tab.1.center" timestamp="1611759929180">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="313" key="GridCell.Tab.1.center/0.23.1680.988@0.23.1680.988" timestamp="1611702200033" />
-    <state width="1463" height="313" key="GridCell.Tab.1.left" timestamp="1611702200033">
+    <state width="1463" height="313" key="GridCell.Tab.1.center/0.23.1680.988@0.23.1680.988" timestamp="1611759929180" />
+    <state width="1463" height="313" key="GridCell.Tab.1.left" timestamp="1611759929179">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="313" key="GridCell.Tab.1.left/0.23.1680.988@0.23.1680.988" timestamp="1611702200033" />
-    <state width="1463" height="313" key="GridCell.Tab.1.right" timestamp="1611702200034">
+    <state width="1463" height="313" key="GridCell.Tab.1.left/0.23.1680.988@0.23.1680.988" timestamp="1611759929179" />
+    <state width="1463" height="313" key="GridCell.Tab.1.right" timestamp="1611759929180">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="313" key="GridCell.Tab.1.right/0.23.1680.988@0.23.1680.988" timestamp="1611702200034" />
+    <state width="1463" height="313" key="GridCell.Tab.1.right/0.23.1680.988@0.23.1680.988" timestamp="1611759929180" />
     <state x="470" y="233" width="670" height="676" key="search.everywhere.popup" timestamp="1611677885537">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
