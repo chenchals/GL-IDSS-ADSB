@@ -23,7 +23,7 @@ warnings.filterwarnings('ignore')
 # %matplotlib inline
 
 
-class BTCHelper():
+class BTCDataUtil:
 
     def __init__(self, srcPath, trainDir, testDir):
         self.srcPath = srcPath
@@ -76,63 +76,57 @@ class BTCHelper():
         print(f'Returning cached [{self.__mergeAndSplit}] training and testing datasets')
         return self.__trainArr, self.__testArr, self.__trainDf, self.__testDf
 
-    def __updateCache(self, resize):
+    def __updateCache(self, imgResize):
         """Update train and test datasets
         Parameters
         ----------
-        resize : An integer corresponding to resize ex. 256
+        imgResize : An integer corresponding to resize ex. 256
 
         Returns
         -------
         """
-        trainFile = self.trainDir + '_' + str(resize) + '.h5'
-        testFile = self.testDir + '_' + str(resize) + '.h5'
+        trainFile = self.trainDir + '_' + str(imgResize) + '.h5'
+        testFile = self.testDir + '_' + str(imgResize) + '.h5'
         trainHdf5File = os.path.join(self.srcPath, trainFile)
         testHdf5File = os.path.join(self.srcPath, testFile)
         # assert files exist
         # assert os.path.exists(trainHdf5File), os.path.abspath(trainHdf5File)
         # assert os.path.exists(testHdf5File), os.path.abspath(testHdf5File)
-        if not os.path.exists(trainHdf5File) or not os.path.exists(testHdf5File):
+        if not os.path.exists(trainHdf5File) or (not os.path.exists(testHdf5File)):
             print('Converting dataset to HDF5 files')
-            DataUtils.convertToHdf5(self.srcPath, self.trainDir, resize)
-            DataUtils.convertToHdf5(self.srcPath, self.testDir, resize)
+            self.convertToHdf5(self.trainDir, imgResize)
+            self.convertToHdf5(self.testDir, imgResize)
 
         # Read train and test HDF5 files
         print('Caching train and test datasets')
-        self.__trainArr, _, self.__trainDf = DataUtils.readHdf5File(trainHdf5File)
+        self.__trainArr, _, self.__trainDf = self.readHdf5File(trainHdf5File)
         self.__trainDf['setName'] = 'Training'
         self.__trainDf['imageUID'] = self.__trainDf['setName'] \
-                                     + '_' + self.__trainDf['tumorCategory'] \
-                                     + '_' + self.__trainDf['fileId']
-        self.__testArr, _, self.__testDf = DataUtils.readHdf5File(testHdf5File)
+            + '_' + self.__trainDf['tumorCategory'] + '_' + self.__trainDf['fileId']
+        self.__testArr, _, self.__testDf = self.readHdf5File(testHdf5File)
         self.__testDf['setName'] = 'Testing'
-        self.__testDf['imageUID'] = self.__testDf['setName'] \
-                                    + '_' + self.__testDf['tumorCategory'] \
-                                    + '_' + self.__testDf['fileId']
+        self.__testDf['imageUID'] = self.__testDf['setName'] + '_' \
+            + self.__testDf['tumorCategory'] + '_' + self.__testDf['fileId']
         # set cached flag
         self.__cached = True
-        self.__cachedSize = resize
+        self.__cachedSize = imgResize
         # return nothing
 
-
-class DataUtils:
-
-    @staticmethod
-    def convertToHdf5(srcDataPath, dirName, resize):
-        dirPath = os.path.join(srcDataPath, dirName)
-        hdfFile = os.path.join(srcDataPath, (dirName + '_' + str(resize) + '.h5'))
+    def convertToHdf5(self, dirName,imgResize):
+        dirPath = os.path.join(self.srcPath, dirName)
+        hdfFile = os.path.join(self.srcPath, (dirName + '_' + str(imgResize) + '.h5'))
         if not os.path.exists(hdfFile):
-            imgArr, imgInfoDf = DataUtils.getImageDataset(dirPath, resize)
-            DataUtils.writeHdf5File(hdfFile, imgArr, imgInfoDf)
-        imgArr, labels, infoDf = DataUtils.readHdf5File(hdfFile)
+            imgArr, imgInfoDf = self.getImageDataset(dirPath, imgResize)
+            self.writeHdf5File(hdfFile, imgArr, imgInfoDf)
+        imgArr, labels, infoDf = self.readHdf5File(hdfFile)
         return imgArr, infoDf
 
     @staticmethod
-    def cropImg(img, thresh=25):
+    def cropImg(inImg, thresh=25):
         """Crops an image at a given threshold of grayscale value
         Parameters
         ----------
-        img : An image - A 2D array of int values (0-255)
+        inImg : An image - A 2D array of int values (0-255)
         thresh : A int specifying the grayscale value at which to
                  crop the image default=25
 
@@ -140,12 +134,11 @@ class DataUtils:
         -------
         Cropped image
         """
-        masked = img > thresh
-        return img[np.ix_(masked.any(1), masked.any(0))]
+        masked = inImg > thresh
+        return inImg[np.ix_(masked.any(1), masked.any(0))]
 
     # Read original image data directory structure
-    @staticmethod
-    def getImageDataset(dirPath, resize):
+    def getImageDataset(self, dirPath, imgResize):
         """Read image datafiles from directory path with category
            names as sub-directories and default crops at grayscale
            value of 25, to remove borders
@@ -156,7 +149,7 @@ class DataUtils:
                   sub-folder names
                   ['glioma_tumor','meningioma_tumor','no_tumor','pituitary_tumor']
                   that each have the image files
-        resize : An int specifying how each image should be resized
+        imgResize : An int specifying how each image should be resized
 
         Returns
         -------
@@ -177,15 +170,15 @@ class DataUtils:
             labelPath = os.path.join(dirPath, label)
             for f in os.listdir(labelPath):
                 # get image metadata
-                img = cv2.imread(os.path.join(labelPath, f), cv2.IMREAD_GRAYSCALE)
+                inImg = cv2.imread(os.path.join(labelPath, f), cv2.IMREAD_GRAYSCALE)
                 _labels.append(label)
                 _files.append(f)
-                _width.append(img.shape[0])
-                _height.append(img.shape[1])
-                img = DataUtils.cropImg(img)
+                _width.append(inImg.shape[0])
+                _height.append(inImg.shape[1])
+                img = self.cropImg(inImg)
                 _cropWidth.append(img.shape[0])
                 _cropHeight.append(img.shape[1])
-                images.append(cv2.resize(img, (resize, resize)))
+                images.append(cv2.resize(img, (imgResize, imgResize)))
 
         imageInfoDf = pd.DataFrame({'tumorCategory': _labels, 'fileId': _files,
                                     'origWidth': _width, 'origHeight': _height,
@@ -263,6 +256,7 @@ class DataUtils:
         h5f.close()
         print(f'wrote file {os.path.abspath(hdfFile)}')
 
+    @staticmethod
     def readHdf5File(hdfFile):
         """Read a previously written Training or Testing HDF5 format datafile
 
@@ -896,7 +890,7 @@ if __name__ == '__main__':
     # ######################################################
     # #test train and test create hdf5 file if not exist
     # first delete if exists:
-    btc = BTCHelper(dataPath, 'Training', 'Testing')
+    btc = BTCDataUtil(dataPath, 'Training', 'Testing')
     resize = 32  # so that it is fast
     for prefix in ['Training', 'Testing']:
         fil = os.path.join(dataPath, prefix + '_' + str(resize) + '.h5')
