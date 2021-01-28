@@ -23,7 +23,7 @@ warnings.filterwarnings('ignore')
 # %matplotlib inline
 
 
-class BTCDataUtil:
+class DataUtil:
 
     def __init__(self, srcPath, trainDir, testDir):
         self.srcPath = srcPath
@@ -99,11 +99,11 @@ class BTCDataUtil:
 
         # Read train and test HDF5 files
         print('Caching train and test datasets')
-        self.__trainArr, _, self.__trainDf = self.readHdf5File(trainHdf5File)
+        self.__trainArr, self.__trainDf = self.readHdf5File(trainHdf5File)
         self.__trainDf['setName'] = 'Training'
         self.__trainDf['imageUID'] = self.__trainDf['setName'] \
             + '_' + self.__trainDf['tumorCategory'] + '_' + self.__trainDf['fileId']
-        self.__testArr, _, self.__testDf = self.readHdf5File(testHdf5File)
+        self.__testArr, self.__testDf = self.readHdf5File(testHdf5File)
         self.__testDf['setName'] = 'Testing'
         self.__testDf['imageUID'] = self.__testDf['setName'] + '_' \
             + self.__testDf['tumorCategory'] + '_' + self.__testDf['fileId']
@@ -118,7 +118,7 @@ class BTCDataUtil:
         if not os.path.exists(hdfFile):
             imgArr, imgInfoDf = self.getImageDataset(dirPath, imgResize)
             self.writeHdf5File(hdfFile, imgArr, imgInfoDf)
-        imgArr, labels, infoDf = self.readHdf5File(hdfFile)
+        imgArr, infoDf = self.readHdf5File(hdfFile)
         return imgArr, infoDf
 
     @staticmethod
@@ -202,8 +202,8 @@ class BTCDataUtil:
         -------
         An named array stored in the file
         """
-        assert varName in ['tumorCategory', 'origWidth', 'origHeight',
-                           'cropWidth', 'cropHeight', 'images']
+        varList = ['tumorCategory', 'origWidth', 'origHeight', 'cropWidth', 'cropHeight', 'images']
+        assert varName in varList, f'Variable name not in list {varList}'
         h5f = h5py.File(hdfFile, 'r')
         if varName in ['tumorCategory', 'fileId']:
             return getShortLabels(np.array(h5f['/' + varName]).astype("str"))
@@ -284,8 +284,8 @@ class BTCDataUtil:
             infoDf[tag] = np.array(h5f['/' + tag]).astype('uint16')
         # shorten labels
         infoDf['tumorCategory'] = getShortLabels(infoDf['tumorCategory'].values)
-        labels = infoDf['tumorCategory']
-        return imgArr, labels, infoDf
+
+        return imgArr, infoDf
 
 
 def getCPUorGPUorTPUStrategy():
@@ -890,7 +890,7 @@ if __name__ == '__main__':
     # ######################################################
     # #test train and test create hdf5 file if not exist
     # first delete if exists:
-    btc = BTCDataUtil(dataPath, 'Training', 'Testing')
+    btc = DataUtil(dataPath, 'Training', 'Testing')
     resize = 32  # so that it is fast
     for prefix in ['Training', 'Testing']:
         fil = os.path.join(dataPath, prefix + '_' + str(resize) + '.h5')
