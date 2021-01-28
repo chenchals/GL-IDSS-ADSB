@@ -37,7 +37,7 @@ class BTCDataUtil:
         self.__cached = False
         self.__cachedSize = 0
 
-    def getDataSet(self, imgResize, mergeSplit=None, forceReread=False):
+    def getTrainTestData(self, imgResize, mergeSplit=None, forceReread=False):
         """Get train and test datasets
         Parameters
         ----------
@@ -897,12 +897,12 @@ if __name__ == '__main__':
         if os.path.exists(fil):
             os.remove(fil)
 
-    trainArr, testArr, trainDf, testDf = btc.getDataSet(resize)
+    trainArr, testArr, trainDf, testDf = btc.getTrainTestData(resize)
     print(trainArr.shape, testArr.shape)
     print(trainDf)
     print(testDf)
     # check reading from cache
-    trainArr1, testArr1, trainDf1, testDf1 = btc.getDataSet(resize)
+    trainArr1, testArr1, trainDf1, testDf1 = btc.getTrainTestData(resize)
     print(trainArr1.shape, testArr1.shape)
     print(trainDf1)
     print(testDf1)
