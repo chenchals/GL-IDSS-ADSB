@@ -6,10 +6,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d5d6add-464c-464e-b8ac-335c1952101a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/07-Capstone/btc/test_btc_DataUtils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/07-Capstone/BTC_CNN_Classification.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/07-Capstone/BTC_CNN_Classification.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/07-Capstone/btc/btc_helpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/07-Capstone/btc/btc_helpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/07-Capstone/btc/test_btchelpers.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +50,29 @@
       <recent name="$PROJECT_DIR$/07-Capstone" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.btc_helpers">
+    <configuration name="btc_helpers" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="GL-IDSS-ADSB" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/07-Capstone/btc" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/07-Capstone/btc/btc_helpers.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="Unittests for btc.test_btc_DataUtils" type="tests" factoryName="Unittests" nameIsGenerated="true">
       <module name="GL-IDSS-ADSB" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -113,21 +134,6 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Unittests for btc.test_btc_DataUtils.TestDataUtil.test_write_hdf5file" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <module name="GL-IDSS-ADSB" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/07-Capstone/btc" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;btc.test_btc_DataUtils.TestDataUtil.test_write_hdf5file&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <configuration name="Unittests for btc.test_btchelpers.TestDataUtil" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="GL-IDSS-ADSB" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -160,11 +166,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.btc_helpers" />
         <item itemvalue="Python tests.Unittests for btc.test_btc_DataUtils.TestDataUtil" />
         <item itemvalue="Python tests.Unittests for btc.test_btc_DataUtils.TestDataUtil.test_read_hdf5var" />
         <item itemvalue="Python tests.Unittests in test_btc_DataUtils.py" />
         <item itemvalue="Python tests.Unittests for btc.test_btc_DataUtils.TestDataUtil" />
-        <item itemvalue="Python tests.Unittests for btc.test_btc_DataUtils.TestDataUtil.test_write_hdf5file" />
       </list>
     </recent_temporary>
   </component>
@@ -181,7 +187,9 @@
       <updated>1611677445911</updated>
       <workItem from="1611677446950" duration="21582000" />
       <workItem from="1611760872268" duration="1920000" />
-      <workItem from="1611791353674" duration="8898000" />
+      <workItem from="1611791353674" duration="9446000" />
+      <workItem from="1611925875028" duration="6034000" />
+      <workItem from="1612045090774" duration="145000" />
     </task>
     <servers />
   </component>
@@ -238,38 +246,38 @@
       <screen x="0" y="23" width="1680" height="988" />
     </state>
     <state x="554" y="361" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1680.988@0.23.1680.988" timestamp="1611678084659" />
-    <state width="1463" height="367" key="GridCell.Tab.0.bottom" timestamp="1611851186466">
+    <state width="1463" height="313" key="GridCell.Tab.0.bottom" timestamp="1612044563321">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="367" key="GridCell.Tab.0.bottom/0.23.1680.988@0.23.1680.988" timestamp="1611851186466" />
-    <state width="1463" height="367" key="GridCell.Tab.0.center" timestamp="1611851186465">
+    <state width="1463" height="313" key="GridCell.Tab.0.bottom/0.23.1680.988@0.23.1680.988" timestamp="1612044563321" />
+    <state width="1463" height="313" key="GridCell.Tab.0.center" timestamp="1612044563320">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="367" key="GridCell.Tab.0.center/0.23.1680.988@0.23.1680.988" timestamp="1611851186465" />
-    <state width="1463" height="367" key="GridCell.Tab.0.left" timestamp="1611851186464">
+    <state width="1463" height="313" key="GridCell.Tab.0.center/0.23.1680.988@0.23.1680.988" timestamp="1612044563320" />
+    <state width="1463" height="313" key="GridCell.Tab.0.left" timestamp="1612044563320">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="367" key="GridCell.Tab.0.left/0.23.1680.988@0.23.1680.988" timestamp="1611851186464" />
-    <state width="1463" height="367" key="GridCell.Tab.0.right" timestamp="1611851186465">
+    <state width="1463" height="313" key="GridCell.Tab.0.left/0.23.1680.988@0.23.1680.988" timestamp="1612044563320" />
+    <state width="1463" height="313" key="GridCell.Tab.0.right" timestamp="1612044563320">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="367" key="GridCell.Tab.0.right/0.23.1680.988@0.23.1680.988" timestamp="1611851186465" />
-    <state width="1463" height="313" key="GridCell.Tab.1.bottom" timestamp="1611759929180">
+    <state width="1463" height="313" key="GridCell.Tab.0.right/0.23.1680.988@0.23.1680.988" timestamp="1612044563320" />
+    <state width="1463" height="313" key="GridCell.Tab.1.bottom" timestamp="1612044563322">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="313" key="GridCell.Tab.1.bottom/0.23.1680.988@0.23.1680.988" timestamp="1611759929180" />
-    <state width="1463" height="313" key="GridCell.Tab.1.center" timestamp="1611759929180">
+    <state width="1463" height="313" key="GridCell.Tab.1.bottom/0.23.1680.988@0.23.1680.988" timestamp="1612044563322" />
+    <state width="1463" height="313" key="GridCell.Tab.1.center" timestamp="1612044563321">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="313" key="GridCell.Tab.1.center/0.23.1680.988@0.23.1680.988" timestamp="1611759929180" />
-    <state width="1463" height="313" key="GridCell.Tab.1.left" timestamp="1611759929179">
+    <state width="1463" height="313" key="GridCell.Tab.1.center/0.23.1680.988@0.23.1680.988" timestamp="1612044563321" />
+    <state width="1463" height="313" key="GridCell.Tab.1.left" timestamp="1612044563321">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="313" key="GridCell.Tab.1.left/0.23.1680.988@0.23.1680.988" timestamp="1611759929179" />
-    <state width="1463" height="313" key="GridCell.Tab.1.right" timestamp="1611759929180">
+    <state width="1463" height="313" key="GridCell.Tab.1.left/0.23.1680.988@0.23.1680.988" timestamp="1612044563321" />
+    <state width="1463" height="313" key="GridCell.Tab.1.right" timestamp="1612044563322">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
-    <state width="1463" height="313" key="GridCell.Tab.1.right/0.23.1680.988@0.23.1680.988" timestamp="1611759929180" />
+    <state width="1463" height="313" key="GridCell.Tab.1.right/0.23.1680.988@0.23.1680.988" timestamp="1612044563322" />
     <state x="470" y="233" width="670" height="676" key="search.everywhere.popup" timestamp="1611677885537">
       <screen x="0" y="23" width="1680" height="988" />
     </state>
@@ -289,6 +297,7 @@
     <SUITE FILE_PATH="coverage/GL_IDSS_ADSB$Unittests_for_test_btchelpers_TestBTCDataUtil_test_get_data_set.coverage" NAME="Unittests for test_btchelpers.TestBTCDataUtil.test_get_data_set Coverage Results" MODIFIED="1611792642705" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/07-Capstone/btc" />
     <SUITE FILE_PATH="coverage/GL_IDSS_ADSB$Unittests_in_test_btchelpers_py.coverage" NAME="Unittests in test_btchelpers.py Coverage Results" MODIFIED="1611849257750" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/07-Capstone/btc" />
     <SUITE FILE_PATH="coverage/GL_IDSS_ADSB$Unittests_for_test_btchelpers_TestDataUtil_test_read_hdf5var.coverage" NAME="Unittests for test_btchelpers.TestDataUtil.test_read_hdf5var Coverage Results" MODIFIED="1611850704081" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/07-Capstone/btc" />
+    <SUITE FILE_PATH="coverage/GL_IDSS_ADSB$btc_helpers.coverage" NAME="btc_helpers Coverage Results" MODIFIED="1611942468423" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/07-Capstone/btc" />
     <SUITE FILE_PATH="coverage/GL_IDSS_ADSB$BTCHelper.coverage" NAME="BTCHelper Coverage Results" MODIFIED="1611701036641" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/07-Capstone/BTC" />
     <SUITE FILE_PATH="coverage/GL_IDSS_ADSB$Unittests_for_test_btchelpers_TestBTCDataUtil_test_crop_img.coverage" NAME="Unittests for test_btchelpers.TestBTCDataUtil.test_crop_img Coverage Results" MODIFIED="1611792745688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/07-Capstone/btc" />
   </component>

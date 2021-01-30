@@ -484,13 +484,11 @@ def plotAspect(trainInfoDf, testInfoDf, xyCols, lims, figFile=None):
         pltNo = pltNo + 1
         ax = axs[pltNo]
         g = sns.kdeplot(data=df, x=xyCols[0], y=xyCols[1], hue='tumorCategory',
-                        alpha=0.6, fill=True, ax=ax)
-        ax.set_xlim(lims)
-        ax.set_ylim(lims)
+                        alpha=0.6, fill=True,xlim=lims,ylim=lims, ax=ax)
         # draw diagonal line for square shape ref.
-        g.plot(lims, lims, ':k', linewidth=0.5)
+        g.ax_joint.plot(lims, lims, ':k', linewidth=0.5)
         if pltNo > 0:
-            g.legend_.remove()
+            g.ax_joint.legend_.remove()
     if figFile is not None:
         plt.savefig(figFile, bbox_inches='tight')
     plt.show()
@@ -867,6 +865,54 @@ def getClassificationReport(model, testData, testCats, targetNames, asDataframe=
                                      target_names=targetNames)
 
 
+def getAggregatedReportsDf(historyPath, baseFilename):
+    import re
+    # Load validation histories from files
+    savedFiles = os.listdir(historyPath)
+    historyPattern = baseFilename + '.*history'
+    classifPattern = baseFilename + '.*classifReport'
+    historyFiles = [x for x in savedFiles if re.search(historyPattern, x)]
+    classificationFiles = [x for x in savedFiles if re.search(classifPattern, x)]
+    # Get all histories as DF
+    historyDf = None
+    for f in historyFiles:
+        if f.find('LogTransform') > -1:
+            continue
+        temp = pd.read_csv(os.path.join(historyPath, f))
+        temp = temp.iloc[:, 0:9]
+        temp.columns = ['epoch', 'loss', 'accuracy', 'precision', 'recall', 'val_loss', 'val_accuracy', 'val_precision',
+                        'val_recall']
+        if historyDf is None:
+            historyDf = temp.copy()
+            historyDf['fileId'] = f
+        else:
+            temp['fileId'] = f
+            historyDf = historyDf.append(temp)
+
+    # Get all classification reports as DF
+    classifRepDf = pd.read_csv(os.path.join(historyPath, classificationFiles[0]))
+    classifRepDf['fileId'] = classificationFiles[0]
+    for f in classificationFiles[1:]:
+        if f.find('LogTransform') > -1:
+            continue
+        temp = pd.read_csv(os.path.join(historyPath, f))
+        temp['fileId'] = f
+        classifRepDf = classifRepDf.append(temp)
+
+    classifRepDf = classifRepDf.iloc[:, 1:]
+    classifRepDf.columns = ['statistic', 'glioma', 'meningioma', 'no_tumor', 'pituitary', 'accuracy', 'macro avg',
+                            'weighted avg', 'fileId']
+
+    historyDf['modelName'] = ['-'.join(x.split('_')[2].split('-')[:-1]) for x in historyDf['fileId']]
+    historyDf['imgPreProc'] = [x.split('_')[2].split('-')[-1] for x in historyDf['fileId']]
+
+    classifRepDf['modelName'] = ['-'.join(x.split('_')[2].split('-')[:-1]) for x in classifRepDf['fileId']]
+    classifRepDf['imgPreProc'] = [x.split('_')[2].split('-')[-1] for x in classifRepDf['fileId']]
+    classifRepDf.reset_index(drop=True, inplace=True)
+
+    return historyDf,classifRepDf
+
+
 if __name__ == '__main__':
     print('in Main')
     dataPath = '../../DataSetBrainTumor'  # dir or link to dir for running local
@@ -888,24 +934,30 @@ if __name__ == '__main__':
     # print(trainDf)
     # print(testDf)
     # ######################################################
-    # #test train and test create hdf5 file if not exist
-    # first delete if exists:
-    btc = DataUtil(dataPath, 'Training', 'Testing')
-    resize = 32  # so that it is fast
-    for prefix in ['Training', 'Testing']:
-        fil = os.path.join(dataPath, prefix + '_' + str(resize) + '.h5')
-        if os.path.exists(fil):
-            os.remove(fil)
+    prevModelPath = '../prevOutput/models/f6'
+    prevModelBaseFile = 'final_06_'
 
-    trainArr, testArr, trainDf, testDf = btc.getTrainTestData(resize)
-    print(trainArr.shape, testArr.shape)
-    print(trainDf)
-    print(testDf)
-    # check reading from cache
-    trainArr1, testArr1, trainDf1, testDf1 = btc.getTrainTestData(resize)
-    print(trainArr1.shape, testArr1.shape)
-    print(trainDf1)
-    print(testDf1)
+    historyDf, classifDf = getAggregatedReportsDf(prevModelPath, prevModelBaseFile)
+
+    # ######################################################
+    # # test train and test create hdf5 file if not exist
+    # # first delete if exists:
+    # btc = DataUtil(dataPath, 'Training', 'Testing')
+    # resize = 32  # so that it is fast
+    # for prefix in ['Training', 'Testing']:
+    #     fil = os.path.join(dataPath, prefix + '_' + str(resize) + '.h5')
+    #     if os.path.exists(fil):
+    #         os.remove(fil)
+    #
+    # trainArr, testArr, trainDf, testDf = btc.getTrainTestData(resize)
+    # print(trainArr.shape, testArr.shape)
+    # print(trainDf)
+    # print(testDf)
+    # # check reading from cache
+    # trainArr1, testArr1, trainDf1, testDf1 = btc.getTrainTestData(resize)
+    # print(trainArr1.shape, testArr1.shape)
+    # print(trainDf1)
+    # print(testDf1)
     # test write reshaped...
     # imgReshape = 150
     # trainImgs, trainLabels, trainDf = DataUtils.convertToHdf5(dataPath, 'Training',imgReshape)
