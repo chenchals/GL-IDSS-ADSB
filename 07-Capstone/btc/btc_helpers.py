@@ -318,7 +318,7 @@ def getCPUorGPUorTPUStrategy():
 
 # Get distribution of labels
 def getLabelDistributionDf(labelsDict):
-    """Computes the counts and fraction of total counts for set of labels
+    """Computes the counts and percent of total counts for set of labels
 
     Parameters
     ----------
@@ -329,12 +329,12 @@ def getLabelDistributionDf(labelsDict):
     Returns
     -------
     Dataframe of label distribution with index of `category labels` and column
-             names as `key, keyFraction`
+             names as `key, key%`
     """
     labelCounts = {}
     for key, val in labelsDict.items():
         labelCounts[key] = pd.Series(val).value_counts()
-        labelCounts[''.join([key, 'Fraction'])] = labelCounts[key] / labelCounts[key].sum()
+        labelCounts[''.join([key, '%'])] = 100* labelCounts[key] / labelCounts[key].sum()
     labelDist = pd.DataFrame(labelCounts)
     labelDist.sort_index(inplace=True)  # always get labels in same order
     labelDist.loc['Total'] = labelDist.sum(axis=0)
@@ -414,6 +414,18 @@ def getShortLabels(labels):
         return []  # return an empty array
 
 
+#https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
+def decimal_format(seriesOrDf, precision):
+    p = precision
+    if seriesOrDf.ndim == 1: # Series
+        return [f'{v:>{p}f}' if type(v) is not str else v for v in seriesOrDf.values]
+    else: # is a dataframe
+        dat = []
+        for row in seriesOrDf.values:
+            dat.append([f'{v:>{p}f}' if type(v) is not str else f'{v}' for v in row])
+        return pd.DataFrame(dat, index=seriesOrDf.index, columns=seriesOrDf.columns)
+
+
 def _pieTexts(percentVal, allCounts):
     catCount = int(percentVal / 100.0 * np.sum(allCounts))
     return f'{percentVal:.1f}%\n({catCount:d})'
@@ -449,8 +461,7 @@ def plotPieDistribution(trainInfoDf, testInfoDf, figFile=None):
             ax.legend(bbox_to_anchor=(0., -0.1, 2., .2), loc='lower left',
                       ncol=4, mode="expand", borderaxespad=0., frameon=False, fontsize='x-large')
         ax.set_title(figTit, fontdict={'fontsize': 14, 'fontweight': 'bold'}, pad=0.1)
-    if figFile is not None:
-        plt.savefig(figFile, bbox_inches='tight')
+    _flushPlot(figFile)
     plt.show()
 
 
@@ -471,8 +482,7 @@ def plotWidthHeightViolin(trainInfoDf, testInfoDf, xyCols, figFile=None):
             g.legend_.remove()
         # if pltNo > 0:
         #     ax.legend(loc='upper left', frameon=False)
-    if figFile is not None:
-        plt.savefig(figFile, bbox_inches='tight')
+    _flushPlot(figFile)
     plt.show()
 
 
@@ -489,8 +499,7 @@ def plotAspect(trainInfoDf, testInfoDf, xyCols, lims, figFile=None):
         g.ax_joint.plot(lims, lims, ':k', linewidth=0.5)
         if pltNo > 0:
             g.ax_joint.legend_.remove()
-    if figFile is not None:
-        plt.savefig(figFile, bbox_inches='tight')
+    _flushPlot(figFile)
     plt.show()
 
 
@@ -521,8 +530,7 @@ def plotPixelValueDist(trainArr, testArr, trainInfoDf, testInfoDf, scale='Count'
         # ax.legend_(loc='upper left', frameon=False)
         if pltNo > 0:
             g.legend_.remove()
-    if figFile is not None:
-        plt.savefig(figFile, bbox_inches='tight')
+    _flushPlot(figFile)
     plt.show()
 
 
@@ -785,7 +793,7 @@ def getTrainTestIndexes(trainLabels, testSplit=0.2):
 # Using predefined split indices to run different image processing calls
 # tried to do sklearn pipeline... but this was simpler
 def getTrainValTestData(trainImgs, trainLabels, trainIndex, validationIndex,
-                        testImgs, testLabels, preProcName='Z-Scored'):
+                        testImgs, testLabels, preProcName=None):
     if type(trainIndex) is pd.Series:
         # print('is Series')
         trainIndex = trainIndex.index
@@ -812,15 +820,6 @@ def getTrainValTestData(trainImgs, trainLabels, trainIndex, validationIndex,
     ts_y = tumorCategoryOHE.transform(testLabels.values.reshape(-1, 1)).toarray()
 
     classLabels = [x.replace('x0_', '') for x in tumorCategoryOHE.get_feature_names()]
-    # Print model training data information
-    # print('Shapes for model input and evaluation')
-    # print(f'  Training: image-array (tr_x) {tr_x.shape}, OHE-labels (tr_y) {tr_y.shape}')
-    # print(f'Validation: image-array (vl_x) {vl_x.shape}, OHE-labels (vl_y) {vl_y.shape}')
-    # print(f'   Testing: image-array (ts_x) {ts_x.shape}, OHE-labels (vl_y) {ts_y.shape}')
-    # display(btc.getLabelDistributionDf({'Train':trainLabels[tr_ix],'Val':trainLabels[vl_ix],'Test':testLabels}))
-    # print(f'Class weights for different categories {classWeights}')
-    # print(f'Class weights Dict for different categories {classWeightsDict}')
-    # print('Class weights * trainFraction:', classWeights*labelDist['TrainFraction'][:-1] )
     return tr_x, tr_y, vl_x, vl_y, ts_x, ts_y, classLabels
 
 
